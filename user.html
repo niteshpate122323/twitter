@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f8fa;
+            transition: background-color 0.3s ease;
+        }
+        .dark-mode {
+            background-color: #15202b;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+        }
+        .main-content {
+            flex: 2;
+            margin-right: 20px;
+        }
+        .sidebar {
+            flex: 1;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e6ecf0;
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+        .dark-mode .header {
+            background-color: #192734;
+            border-bottom: 1px solid #38444d;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1da1f2;
+        }
+        .header-buttons {
+            display: flex;
+            align-items: center;
+        }
+        .tweet-form, .login-form {
+            background-color: white;
+            border: 1px solid #e6ecf0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .dark-mode .tweet-form, .dark-mode .login-form {
+            background-color: #192734;
+            border-color: #38444d;
+        }
+        .name-input, .tweet-input, .password-input, .username-input, .bio-input {
+            width: 100%;
+            border: 1px solid #e6ecf0;
+            resize: none;
+            font-size: 16px;
+            margin-bottom: 10px;
+            padding: 5px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .dark-mode .name-input, .dark-mode .tweet-input, .dark-mode .password-input, .dark-mode .username-input, .dark-mode .bio-input {
+            background-color: #253341;
+            border-color: #38444d;
+            color: #ffffff;
+        }
+        .name-input, .password-input, .username-input {
+            height: 30px;
+        }
+        .tweet-input {
+            height: 80px;
+        }
+        .tweet-actions, .login-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .image-upload, .video-upload {
+            display: none;
+        }
+        .image-upload-label, .video-upload-label, .emoji-select-label {
+            color: #1da1f2;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .tweet-button, .login-button, .logout-button, .mini-post-button, .change-profile-button, .mode-toggle, .save-bio-button {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100px;
+            margin: 5px 0;
+        }
+        .dark-mode .tweet-button, .dark-mode .login-button, .dark-mode .logout-button, .dark-mode .mini-post-button, .dark-mode .change-profile-button, .dark-mode .mode-toggle, .dark-mode .save-bio-button {
+            background-color: #1a91da;
+        }
+        .logout-button {
+            background-color: #e0245e;
+            margin-left: 10px;
+        }
+        .dark-mode .logout-button {
+            background-color: #c51e4a;
+        }
+        .tweets {
+            margin-top: 20px;
+        }
+        .tweet {
+            background-color: white;
+            border: 1px solid #e6ecf0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .dark-mode .tweet {
+            background-color: #192734;
+            border-color: #38444d;
+        }
+        .tweet-content {
+            margin-bottom: 10px;
+        }
+        .tweet-image, .profile-image, .mini-post-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .tweet-video {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .delete-tweet {
+            color: #e0245e;
+            cursor: pointer;
+            float: right;
+        }
+        .trending, .user-profile {
+            background-color: white;
+            border: 1px solid #e6ecf0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .dark-mode .trending, .dark-mode .user-profile {
+            background-color: #192734;
+            border-color: #38444d;
+        }
+        .trending h2, .user-profile h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .trending-item {
+            margin-bottom: 10px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #f5f8fa;
+            border-top: 1px solid #e6ecf0;
+            font-size: 12px;
+            color: #657786;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .dark-mode footer {
+            background-color: #15202b;
+            border-top-color: #38444d;
+            color: #8899a6;
+        }
+        .comment-input {
+            width: 100%;
+            border: 1px solid #e6ecf0;
+            resize: none;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 5px;
+            height: 40px;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .dark-mode .comment-input {
+            background-color: #253341;
+            border-color: #38444d;
+            color: #ffffff;
+        }
+        .comment-button {
+            background-color: #1da1f2;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: background-color 0.3s ease;
+            width: 80px;
+        }
+        .dark-mode .comment-button {
+            background-color: #1a91da;
+        }
+        .comments {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .comment {
+            border-top: 1px solid #e6ecf0;
+            padding-top: 5px;
+            margin-top: 5px;
+            transition: border-color 0.3s ease;
+        }
+        .dark-mode .comment {
+            border-top-color: #38444d;
+        }
+        .like-button {
+            background-color: transparent;
+            border: none;
+            color: #1da1f2;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+            width: 80px;
+        }
+        .mini-post {
+            background-color: white;
+            border: 1px solid #e6ecf0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .dark-mode .mini-post {
+            background-color: #192734;
+            border-color: #38444d;
+        }
+        .mini-post-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        .hashtag-suggestion {
+            background-color: white;
+            border: 1px solid #e6ecf0;
+            border-radius: 5px;
+            padding: 5px;
+            margin-top: 5px;
+            display: none;
+        }
+        .dark-mode .hashtag-suggestion {
+            background-color: #192734;
+            border-color: #38444d;
+        }
+        .hashtag-item {
+            cursor: pointer;
+            padding: 2px 5px;
+        }
+        .hashtag-item:hover {
+            background-color: #f5f8fa;
+        }
+        .dark-mode .hashtag-item:hover {
+            background-color: #22303c;
+        }
+        .emoji-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #f5f8fa;
+            border: 1px solid #e6ecf0;
+            border-radius: 20px;
+            padding: 8px 30px 8px 12px;
+            font-size: 14px;
+            color: #1da1f2;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%231da1f2" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+            width: 140px;
+            margin-right: 10px;
+        }
+        .dark-mode .emoji-select {
+            background-color: #253341;
+            border-color: #38444d;
+            color: #1a91da;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%231a91da" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        }
+        .emoji-select:hover {
+            background-color: #e8f5fe;
+        }
+        .dark-mode .emoji-select:hover {
+            background-color: #192734;
+        }
+        .emoji-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.5);
+        }
+        .small-footer {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 10px;
+            color: #657786;
+        }
+        .dark-mode .small-footer {
+            color: #8899a6;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Twitter</div>
+        <div class="header-buttons">
+            <button class="mode-toggle" id="mode-toggle">🌙</button>
+            <button class="logout-button" id="logout-button" style="display: none;">Logout</button>
+        </div>
+    </header>
+    <div class="container">
+        <div class="main-content">
+            <main>
+                <div class="login-form" id="login-form">
+                    <input type="text" class="name-input" id="login-name" placeholder="Your name">
+                    <input type="text" class="username-input" id="login-username" placeholder="Your username">
+                    <input type="password" class="password-input" id="login-password" placeholder="Your password">
+                    <input type="file" id="profile-image-upload" class="image-upload" accept="image/*">
+                    <label for="profile-image-upload" class="image-upload-label">📷 Add Profile Image</label>
+                    <button class="login-button" id="login-button">Login / Sign Up</button>
+                </div>
+                <div class="tweet-form" id="tweet-form" style="display: none;">
+                    <textarea class="tweet-input" placeholder="What's happening?"></textarea>
+                    <div class="hashtag-suggestion"></div>
+                    <div class="tweet-actions">
+                        <input type="file" id="image-upload" class="image-upload" accept="image/*">
+                        <label for="image-upload" class="image-upload-label">📷 Add Image</label>
+                        <input type="file" id="video-upload" class="video-upload" accept="video/*">
+                        <label for="video-upload" class="video-upload-label">🎥 Add Video</label>
+                        <select id="emoji-select" class="emoji-select">
+                            <option value="">😀 Select Emoji</option>
+                            <option value="😀">😀</option>
+                            <option value="😂">😂</option>
+                            <option value="😍">😍</option>
+                            <option value="🤔">🤔</option>
+                            <option value="👍">👍</option>
+                            <option value="🎉">🎉</option>
+                            <!-- Add more emoji options here -->
+                        </select>
+                        <button class="tweet-button">Tweet</button>
+                    </div>
+                </div>
+                <div class="tweets" id="tweets-container">
+                    <!-- Tweets will be dynamically added here -->
+                </div>
+            </main>
+        </div>
+        <div class="sidebar">
+            <!-- Trending section and related CSS removed -->
+            <div class="user-profile" id="user-profile" style="display: none;">
+                <h2>User Profile</h2>
+                <img id="profile-image" class="profile-image" src="" alt="Profile Image">
+                <p id="profile-name"></p>
+                <p id="profile-username"></p>
+                <input type="file" id="change-profile-image" class="image-upload" accept="image/*">
+                <label for="change-profile-image" class="change-profile-button">Change Profile Image</label>
+            </div>
+            <div class="mini-post" id="mini-post" style="display: none;">
+                <h2>Story Post</h2>
+                <input type="file" id="mini-post-upload" class="image-upload" accept="image/*">
+                <label for="mini-post-upload" class="image-upload-label">📷 Upload Story Post Image</label>
+                <img id="mini-post-image" class="mini-post-image" src="" alt="Mini Post Image" style="display: none;">
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2023 Twitter Clone. All rights reserved.</p>
+    </footer>
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const tweetForm = document.getElementById('tweet-form');
+        const userProfile = document.getElementById('user-profile');
+        const loginNameInput = document.getElementById('login-name');
+        const loginUsernameInput = document.getElementById('login-username');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginButton = document.getElementById('login-button');
+        const logoutButton = document.getElementById('logout-button');
+        const profileImageUpload = document.getElementById('profile-image-upload');
+        const profileImage = document.getElementById('profile-image');
+        const profileName = document.getElementById('profile-name');
+        const profileUsername = document.getElementById('profile-username');
+        const tweetInput = document.querySelector('.tweet-input');
+        const tweetButton = document.querySelector('.tweet-button');
+        const imageUpload = document.getElementById('image-upload');
+        const emojiSelect = document.getElementById('emoji-select');
+        const tweetsContainer = document.getElementById('tweets-container');
+        const miniPost = document.getElementById('mini-post');
+        const miniPostUpload = document.getElementById('mini-post-upload');
+        const miniPostImage = document.getElementById('mini-post-image');
+        const changeProfileImage = document.getElementById('change-profile-image');
+        const modeToggle = document.getElementById('mode-toggle');
+        const hashtagSuggestion = document.querySelector('.hashtag-suggestion');
+        const trendingContainer = document.getElementById('trending-container');
+
+        let imageBase64 = '';
+        let currentUser = null;
+        let miniPostTimeout;
+        let isDarkMode = false;
+        let hashtagCounts = {};
+
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                loginUser(user);
+            }
+            
+            // Check if dark mode was previously enabled
+            if (localStorage.getItem('darkMode') === 'true') {
+                enableDarkMode();
+            }
+        });
+
+        modeToggle.addEventListener('click', () => {
+            if (isDarkMode) {
+                disableDarkMode();
+            } else {
+                enableDarkMode();
+            }
+        });
+
+        function enableDarkMode() {
+            document.body.classList.add('dark-mode');
+            modeToggle.textContent = '☀️';
+            isDarkMode = true;
+            localStorage.setItem('darkMode', 'true');
+        }
+
+        function disableDarkMode() {
+            document.body.classList.remove('dark-mode');
+            modeToggle.textContent = '🌙';
+            isDarkMode = false;
+            localStorage.setItem('darkMode', 'false');
+        }
+
+        loginButton.addEventListener('click', () => {
+            const name = loginNameInput.value.trim();
+            const username = loginUsernameInput.value.trim();
+            const password = loginPasswordInput.value.trim();
+            if (name && username && password) {
+                const user = { name, username, password };
+                if (profileImageUpload.files[0]) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        user.profileImage = reader.result;
+                        loginUser(user);
+                    };
+                    reader.readAsDataURL(profileImageUpload.files[0]);
+                } else {
+                    loginUser(user);
+                }
+            }
+        });
+
+        function loginUser(user) {
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            loginForm.style.display = 'none';
+            tweetForm.style.display = 'block';
+            userProfile.style.display = 'block';
+            miniPost.style.display = 'block';
+            logoutButton.style.display = 'block';
+            profileName.textContent = user.name;
+            profileUsername.textContent = '@' + user.username;
+            if (user.profileImage) {
+                profileImage.src = user.profileImage;
+            }
+            loadTweets();
+        }
+
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('tweets');
+            currentUser = null;
+            loginForm.style.display = 'block';
+            tweetForm.style.display = 'none';
+            userProfile.style.display = 'none';
+            miniPost.style.display = 'none';
+            logoutButton.style.display = 'none';
+            tweetsContainer.innerHTML = '';
+            loginNameInput.value = '';
+            loginUsernameInput.value = '';
+            loginPasswordInput.value = '';
+            profileImageUpload.value = '';
+            miniPostImage.style.display = 'none';
+            miniPostImage.src = '';
+            clearTimeout(miniPostTimeout);
+        });
+
+        changeProfileImage.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    currentUser.profileImage = reader.result;
+                    profileImage.src = reader.result;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function loadTweets() {
+            const savedTweets = JSON.parse(localStorage.getItem('tweets')) || [];
+            tweetsContainer.innerHTML = '';
+            savedTweets.forEach(tweet => {
+                addTweet(tweet.name, tweet.username, tweet.content, tweet.image, tweet.comments, tweet.likes, false);
+            });
+        }
+
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                imageBase64 = reader.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        emojiSelect.addEventListener('change', () => {
+            tweetInput.value += emojiSelect.value;
+            emojiSelect.selectedIndex = 0;
+        });
+
+        tweetButton.addEventListener('click', () => {
+            const tweetContent = tweetInput.value.trim();
+            if (currentUser && (tweetContent || imageBase64)) {
+                addTweet(currentUser.name, currentUser.username, tweetContent, imageBase64, [], 0, true);
+                tweetInput.value = '';
+                imageBase64 = '';
+                imageUpload.value = '';
+            }
+        });
+
+        miniPostUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    miniPostImage.src = reader.result;
+                    miniPostImage.style.display = 'block';
+                    clearTimeout(miniPostTimeout);
+                    miniPostTimeout = setTimeout(() => {
+                        miniPostImage.style.display = 'none';
+                        miniPostImage.src = '';
+                        miniPostUpload.value = '';
+                    }, 60000); // 1 minute in milliseconds
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function addTweet(name, username, content, image, comments = [], likes = 0, saveToStorage = true) {
+            const tweet = document.createElement('div');
+            tweet.className = 'tweet';
+            tweet.innerHTML = `
+                <span class="delete-tweet">❌</span>
+                <strong>${name}</strong> <span>@${username}</span>
+                <p class="tweet-content">${content}</p>
+                ${image ? `<img src="${image}" class="tweet-image" alt="Tweet image">` : ''}
+                <div class="comments">
+                    ${comments.map(comment => `<div class="comment"><strong>${comment.name}:</strong> ${comment.content}</div>`).join('')}
+                </div>
+                <textarea class="comment-input" placeholder="Add a comment..."></textarea>
+                <button class="comment-button">Comment</button>
+                <button class="like-button">❤️ ${likes}</button>
+            `;
+
+            tweet.querySelector('.delete-tweet').addEventListener('click', () => {
+                tweetsContainer.removeChild(tweet);
+                updateLocalStorage();
+            });
+
+            tweet.querySelector('.comment-button').addEventListener('click', () => {
+                const commentInput = tweet.querySelector('.comment-input');
+                const commentContent = commentInput.value.trim();
+                if (currentUser && commentContent) {
+                    const comment = { name: currentUser.name, content: commentContent };
+                    comments.push(comment);
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'comment';
+                    commentElement.innerHTML = `<strong>${comment.name}:</strong> ${comment.content}`;
+                    tweet.querySelector('.comments').appendChild(commentElement);
+                    commentInput.value = '';
+                    updateLocalStorage();
+                }
+            });
+
+            const likeButton = tweet.querySelector('.like-button');
+            likeButton.addEventListener('click', () => {
+                likes++;
+                likeButton.textContent = `❤️ ${likes}`;
+                updateLocalStorage();
+            });
+
+            tweetsContainer.prepend(tweet);
+
+            if (saveToStorage) {
+                saveTweetToLocalStorage(name, username, content, image, comments, likes);
+            }
+        }
+
+        function saveTweetToLocalStorage(name, username, content, image, comments, likes) {
+            const savedTweets = JSON.parse(localStorage.getItem('tweets')) || [];
+            savedTweets.unshift({ name, username, content, image, comments, likes });
+            localStorage.setItem('tweets', JSON.stringify(savedTweets));
+        }
+
+        function updateLocalStorage() {
+            const tweets = Array.from(tweetsContainer.children).map(tweet => ({
+                name: tweet.querySelector('strong').textContent,
+                username: tweet.querySelector('span').textContent.slice(1),
+                content: tweet.querySelector('.tweet-content').textContent,
+                image: tweet.querySelector('.tweet-image') ? tweet.querySelector('.tweet-image').src : null,
+                comments: Array.from(tweet.querySelectorAll('.comment')).map(comment => ({
+                    name: comment.querySelector('strong').textContent.slice(0, -1),
+                    content: comment.textContent.split(': ')[1]
+                })),
+                likes: parseInt(tweet.querySelector('.like-button').textContent.split(' ')[1])
+            }));
+            localStorage.setItem('tweets', JSON.stringify(tweets));
+        }
+    </script>
+</body>
+</html>
